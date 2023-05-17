@@ -1,6 +1,5 @@
-import 'package:chatapp_with_socket_io/provider/get_vendor_connection.dart';
+import 'package:chatapp_with_socket_io/controller/connection_service.dart';
 import 'package:chatapp_with_socket_io/vendor_message.dart';
-import 'package:chatapp_with_socket_io/provider/get_user_connections.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -12,7 +11,7 @@ class UserChatListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Provider.of<GetUserConnections>(context,listen: false).fetchUserConnections();
+      Provider.of<UserConnectionService>(context,listen: false).userConnection();
     });
     return  Scaffold(
       backgroundColor: const Color.fromARGB(255, 223, 223, 221),
@@ -35,42 +34,41 @@ class UserChatListScreen extends StatelessWidget {
                 )),
           
           Expanded(
-            child:ListView.builder(
-                itemBuilder: (context, index) {
-                  return Card(
-                    child: ListTile(
-                      onTap: () async {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const VendorMessageScreen(),));
-                      },
-                      leading:  const CircleAvatar(
-                        
-                      ),
-                      
-                      title: const Text(''),
-                      subtitle:  const Text(""),
-                      trailing: Column(
-                        children: [
-                          const Text(
-                            '10:40',
-                          ),
-                          CircleAvatar(
-                            radius: 9,
-                            child: Text(
-                              '$index',
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  );
-                },
-                itemCount:5,
-              ),
+            child:Consumer<UserConnectionService>(
+              builder: (context, value, child) => 
+               ListView.builder(
+                 itemBuilder: (context, index) {
+                   return Card(
+                     child: ListTile(
+                       onTap: () async {
+                   Navigator.push(context, MaterialPageRoute(builder: (context) => const VendorMessageScreen(),));
+                       },
+                       leading:  value.sortedUsers![index].profilePhoto!.isEmpty
+                         ? const CircleAvatar(backgroundImage: AssetImage(""))
+                         : CircleAvatar(
+                             backgroundImage: NetworkImage(
+                                 value.sortedUsers![index].profilePhoto!),
+                           ),
+                       
+                       title:  Text(value.sortedUsers![index].fullName!),
+                       
+                       trailing: CircleAvatar(
+                         radius: 9,
+                         child: Text(
+                           '${value.connectionCount![index].count}',
+                           style: const TextStyle(fontSize: 12),
+                         ),
+                       ),
+                     ),
+                   );
+                 },
+                 itemCount:value.sortedUsers?.length,
+               ),
+            ),
             ),
           
         ],
       ),
-    );;
+    );
   }
 }

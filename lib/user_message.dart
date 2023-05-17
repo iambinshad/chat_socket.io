@@ -54,7 +54,7 @@ class UserMessageScreen extends StatelessWidget {
                     // return message(
                     //     model: map, context: context, currentId: '');
                   },
-                  itemCount: 1,
+                  itemCount:1,
                 ),
               ),
            
@@ -63,6 +63,6 @@ class UserMessageScreen extends StatelessWidget {
         },
       ),
     );
-    ;
+    
   }
 }

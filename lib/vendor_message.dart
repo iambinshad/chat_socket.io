@@ -7,7 +7,7 @@ class VendorMessageScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: MyTextFormField(suffixIcon: Icon(Icons.send),),
+      bottomNavigationBar: const MyTextFormField(suffixIcon: Icon(Icons.send),),
         backgroundColor: const Color.fromARGB(255, 223, 206, 158),
         appBar: AppBar(
           backgroundColor: Colors.blue,
@@ -26,7 +26,7 @@ class VendorMessageScreen extends StatelessWidget {
               const SizedBox(
                 width: 10,
               ),
-              Text("")
+              const Text("")
             ],
           ),
         ),
@@ -51,11 +51,11 @@ class VendorMessageScreen extends StatelessWidget {
                 Expanded(
                   flex: 10,
                   child: ListView.builder(
-                    reverse: true,
+                    
                     itemBuilder: (context, index) {
                       return Container(
                         color: Colors.yellow,
-                        child: Text("Nothing"),
+                        child: const Text("Nothing"),
                       );
                     },
                     itemCount: 5,
