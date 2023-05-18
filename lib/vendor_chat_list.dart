@@ -1,5 +1,6 @@
+import 'package:chatapp_with_socket_io/chat_room.dart';
 import 'package:chatapp_with_socket_io/controller/connection_service.dart';
-import 'package:chatapp_with_socket_io/vendor_message.dart';
+import 'package:chatapp_with_socket_io/controller/get_message_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -39,10 +40,12 @@ class VendorChatListScreen extends StatelessWidget {
                   return Card(
                     child: ListTile(
                       onTap: () {
+                        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0NDI0Y2E2MjAzODJmYmM2NGE2ZjczZSIsImlhdCI6MTY4NDI0NjU4OCwiZXhwIjoxNjg1MTEwNTg4fQ.9wUhq7WkoXdORHxg7ckRZoui1wNODEGtb_SKkRulSeI";
+                       FetchMessageService().GetMessages("64424ca620382fbc64a6f73e", value.sortedVendors![index].id, token, "vendor");
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const VendorMessageScreen(),
+                              builder: (context) =>  ChatRoom(name:value.sortedVendors![index].fullName,receiverId:value.sortedVendors![index].id,role:"vendor"),
                             ));
                       },
                       leading: value.sortedVendors![index].profilePhoto.isEmpty
@@ -55,10 +58,10 @@ class VendorChatListScreen extends StatelessWidget {
                     
                       trailing: CircleAvatar(
                         radius: 9,
-                        child: Text(
-                          '${value.connectionCount![index].count}',
-                          style: const TextStyle(fontSize: 12),
-                        ),
+                        // child: Text(
+                        //   '${value.connectionCount?[index].count}',
+                        //   style: const TextStyle(fontSize: 12),
+                        // ),
                       ),
                     ),
                   );

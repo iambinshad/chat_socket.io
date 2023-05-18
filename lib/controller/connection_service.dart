@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:chatapp_with_socket_io/core/api_config.dart';
 import 'package:chatapp_with_socket_io/model/user_chat_list_model.dart';
 import 'package:chatapp_with_socket_io/model/vendor_chat_list_model.dart';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
@@ -24,6 +23,7 @@ class UserConnectionService with ChangeNotifier {
       Response response = await dio.get(path,
           options: Options(headers: {"authorization": "Beared $token"}));
       if (response.statusCode == 200) {
+        log(response.data.toString());
         Map<String, dynamic> responseData = response.data;
         var userChatListModel = UserChatListModel.fromJson(responseData);
         sortedUsers = userChatListModel.sortedUsers;
@@ -54,11 +54,11 @@ class VendorConnectionService with ChangeNotifier {
       Response response = await dio.get(path,
           options: Options(headers: {"authorization": "Beared $token"}));
       if (response.statusCode == 200) {
+        log(response.data.toString());
         Map<String, dynamic> responseData = response.data;
         var vendorChatListModel = VendorChatListModel.fromJson(responseData);
         sortedVendors = vendorChatListModel.sortedUsers;
         connectionCount = vendorChatListModel.connectionCount;
-        log(sortedVendors![0].profilePhoto);
       }
     } on DioError catch (e) {
       log(e.message.toString(), name: "Vendor error");
