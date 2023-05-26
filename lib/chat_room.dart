@@ -1,8 +1,11 @@
 import 'dart:developer';
+import 'package:chatapp_with_socket_io/controller/get_message_service.dart';
+import 'package:chatapp_with_socket_io/controller/send_message_service.dart';
 import 'package:chatapp_with_socket_io/core/api_config.dart';
-import 'package:chatapp_with_socket_io/model/get_messages_model.dart';
-import 'package:chatapp_with_socket_io/user_message.dart';
+import 'package:chatapp_with_socket_io/message_tile.dart';
+import 'package:chatapp_with_socket_io/provider/socket_provider.dart';
 import 'package:chatapp_with_socket_io/widget.dart';
+import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:flutter/material.dart';
 
@@ -15,93 +18,62 @@ class ChatRoom extends StatefulWidget {
   String? role;
   String? receiverId;
   String? name;
-  String? chatId;
 
   @override
   State<ChatRoom> createState() => _ChatRoomState();
 }
 
 class _ChatRoomState extends State<ChatRoom> {
-  late IO.Socket socket;
+  // late IO.Socket socket;
 
-  List<MessagesModel>? msgs = [];
-
-  void connectToServer() {
-    socket = IO.io(ApiConfigration.kBaseUrl, <String, dynamic>{
-      'autoConnect': false,
-      'transports': ['websocket'],
-    });
-    socket.connect();
-    if (!socket.connected) {
-      log("done");
-    }
-    socket.on('connect', (_) {
-      print('Connected');
-    });
-
-    socket.on('disconnect', (_) {
-      print('Disconnected');
-    });
-
-    socket.on('error', (data) {
-      print('Error: $data');
-    });
-
-    // Connect to the server
-  }
-  // @override
-  // void initState() {
-
-  //   super.initState();
-  // }
-  // @override
-  // void initState() {
-
-  //   super.initState();
-  // }
-// @override
-//   void dispose() {
-//     // TODO: implement dispose
-//     super.dispose();
-//   }
-// @override
-//   void didChangeDependencies() {
-
-//     super.didChangeDependencies();
-//   }
-// @override
-//   void initState() {
-// super.initState();
-// initSocket();
-//   }
   // @override
   // void initState() {
   //   super.initState();
-  //   connectToServer();
+  //   socket = IO.io(ApiConfigration.kBaseUrl, <String, dynamic>{
+  //     'autoConnect': false,
+  //     'transports': ['websocket'],
+  //   });
   // }
-  @override
-  void initState() {
-    super.initState();
-    socket = IO.io(ApiConfigration.kBaseUrl, <String, dynamic>{
-      'autoConnect': false,
-      'transports': ['websocket'],
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
+    final socketProvi = Provider.of<SocketProvider>(context,listen: false);
+    socketProvi.connect(widget.receiverId, context);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-// connectToServer();
-if(socket.connected){
-  log("conected");
-}
-      if (socket.disconnected) {
-        initSocket();
+      // if (socket.disconnected) {
+      //   initSocket(context);
+      // }
+      if (!socketProvi.socket!.connected) {
+        log("socket not connected");
+      }
+      if (socketProvi.socket!.disconnected) {
+        log("disconnected");
+      }
+      if (socketProvi.socket!.connected) {
+        log("connected");
       }
     });
     return Scaffold(
-      bottomNavigationBar: const MyTextFormField(
-        suffixIcon: Icon(Icons.send),
+      bottomNavigationBar: MyTextFormField(
+        controller: Provider.of<SendMessageService>(context, listen: false)
+            .messageController,
+        suffixIcon: IconButton(
+            onPressed: () async {
+              Provider.of<SendMessageService>(context, listen: false)
+                  .sendMessageService(
+                      widget.role == "vendor"
+                          ? "64424ca620382fbc64a6f73e"
+                          : "6416b6c713f833c7ac1c938a",
+                      widget.receiverId,
+                      widget.role);
+              sendMessageSocket(
+                  widget.role == "vendor"
+                      ? "64424ca620382fbc64a6f73e"
+                      : "6416b6c713f833c7ac1c938a",
+                  widget.receiverId);
+                 
+            },
+            icon: const Icon(Icons.send)),
       ),
       backgroundColor: const Color.fromARGB(255, 223, 206, 158),
       appBar: AppBar(
@@ -114,99 +86,83 @@ if(socket.connected){
           ),
           title: Row(
             children: [
-              CircleAvatar(),
+              const CircleAvatar(),
               Text(widget.name!),
             ],
           )),
-      body: StreamBuilder(
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Container();
-          }
-          if (snapshot.hasError) {
-            return const Center(
-              child: Text('Check Your Internet Connection'),
-            );
-          }
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
+      body: Consumer<FetchMessageService>(
+        builder: (context, messageService, _) {
+          final messages = widget.role == "vendor"
+              ? messageService.messageResponseV!.messages
+              : messageService.messageResponseU!.messages;
 
-          return Column(
-            children: [
-              Expanded(
-                flex: 10,
-                child: ListView.builder(
-                  reverse: true,
-                  itemBuilder: (context, index) {
-                    // Map<String, dynamic> map =
-                    //     snapshot.data!.docs[index].data();
-                    // return message(
-                    //     model: map, context: context, currentId: '');
-                  },
-                  itemCount: 1,
-                ),
-              ),
-            ],
+          return ListView.builder(
+            itemBuilder: (context, index) {
+              final message = messages[index];
+              return messageTile(
+                text: message.message,
+                context: context,
+                myself: message.myself,
+              );
+            },
+            itemCount: messages.length,
           );
         },
       ),
     );
   }
 
-  void initSocket() {
-    log("inside initSocket");
-    //-----connect to the socket id server----//
+// void initSocket(context) {
+//   log("inside initSocket");
 
-    // socket = IO.io(ApiConfigration.kBaseUrl, <String, dynamic>{
-    //   'autoConnect': false,
-    //   'transports': ['websocket'],
-    // });
-    socket.connect();
-    if (socket.connected) {
-      log("socket connected");
-    }
+//   // socket.on("msg-receive", (data) {
+//   //   print(data.toString());
+//   //   // log(data, name: "not working log");
+//   //   Provider.of<FetchMessageService>(context, listen: false)
+//   //       .updateMessage(data["message"]);
+//   // });
 
-    socket.emit("addUser", (widget.receiverId));
-    setState(() {
-      socket.on("msg-receive", (data) {
-        MessagesModel model = MessagesModel(message: data, myself: false);
-        msgs?.add(model);
-      });
-    });
-    // setState(() {
-    //   socket.on('msg-receive', (data) {
-    //     return null;
-    //   });
-    // });
-    // socket.onConnect((data) {
-    //   // log("connection established...");
-    //   socket.emit("addUser", ("64424ca620382fbc64a6f73e"));
-    //   setState(() {
-    //     socket.on(
-    //         "send-msg", (data) => log(data.toString(), name: "get User"));
-    //     socket.on("msg-receive", (data) {
-    //       // log("received");
-    //       // log(data.toString(), name: 'Data');
+//   socket.onDisconnect((_) => log("connection disconnected"));
+//   socket.onConnectError(
+//       (error) => log(error.toString(), name: "Socket connection error"));
+//   socket.onError((error) => log(error.toString(), name: "Socket error"));
 
-    //       // Provider.of<Chatprovider>(context, listen: false)
-    //       //     .updateMessage(data["message"]);
-    //     });
-    //     // log('received..message', name: 'received');
-    //   });
-    // });
-    socket.onDisconnect((_) => log("connection disconnected"));
-    socket.onConnectError(
-        (error) => log(error.toString(), name: "Socket in connection error"));
-    socket.onError(
-        (error) => log(error.toString(), name: "SOcket in another error"));
-  }
+//   socket.connect();
+//   socket.emit("addUser", widget.receiverId);
+// }
+
+  // void initSocket(context) {
+  //   log("inside initSocket");
+  //   socket.connect();
+  //   socket.emit("addUser", widget.receiverId);
+  //    socket.on("msg-receive", (data) {
+  //     log(data,name: "not working log");
+
+  //     Provider.of<FetchMessageService>(context,listen: true).updateMessage(data["message"]);
+
+  //   });
+ 
+
+  //   socket.onDisconnect((_) => log("connection disconnected"));
+  //   socket.onConnectError(
+  //       (error) => log(error.toString(), name: "Socket in connection error"));
+  //   socket.onError(
+  //       (error) => log(error.toString(), name: "SOcket in another error"));
+  // }
 
   @override
   void dispose() {
-    socket.disconnect();
+    Provider.of<SocketProvider>(context,listen: false).socket!.disconnect();
     super.dispose();
+  }
+
+  void sendMessageSocket(String from, String? to) {
+    Provider.of<SocketProvider>(context,listen: false).socket!.emit("send-msg", {
+      "from": from,
+      "to": to,
+      "message": Provider.of<SendMessageService>(context, listen: false)
+          .messageController
+          .text
+    });
   }
 }

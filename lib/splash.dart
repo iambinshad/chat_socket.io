@@ -10,11 +10,13 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      context.read<FetchMessageService>().getMessagesOfVendor("64424ca620382fbc64a6f73e","6416b6c713f833c7ac1c938a", "vendor");
+      context.read<FetchMessageService>().getMessagesOfUser("6416b6c713f833c7ac1c938a","64424ca620382fbc64a6f73e", "user");
       Provider.of<UserConnectionService>(context, listen: false)
           .userConnection();
-                                  String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0NDI0Y2E2MjAzODJmYmM2NGE2ZjczZSIsImlhdCI6MTY4NDI0NjU4OCwiZXhwIjoxNjg1MTEwNTg4fQ.9wUhq7WkoXdORHxg7ckRZoui1wNODEGtb_SKkRulSeI";
+                                  // String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0NDI0Y2E2MjAzODJmYmM2NGE2ZjczZSIsImlhdCI6MTY4NDI0NjU4OCwiZXhwIjoxNjg1MTEwNTg4fQ.9wUhq7WkoXdORHxg7ckRZoui1wNODEGtb_SKkRulSeI";
 
-                       FetchMessageService().GetMessages("64424ca620382fbc64a6f73e/", "6416b6c713f833c7ac1c938a", token, "vendor");
+                      //  FetchMessageService().GetMessages("64424ca620382fbc64a6f73e/", "6416b6c713f833c7ac1c938a", "vendor");
 
       Provider.of<VendorConnectionService>(context, listen: false)
           .vendorConnection();

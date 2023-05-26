@@ -40,8 +40,10 @@ class VendorChatListScreen extends StatelessWidget {
                   return Card(
                     child: ListTile(
                       onTap: () {
-                        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0NDI0Y2E2MjAzODJmYmM2NGE2ZjczZSIsImlhdCI6MTY4NDI0NjU4OCwiZXhwIjoxNjg1MTEwNTg4fQ.9wUhq7WkoXdORHxg7ckRZoui1wNODEGtb_SKkRulSeI";
-                       FetchMessageService().GetMessages("64424ca620382fbc64a6f73e", value.sortedVendors![index].id, token, "vendor");
+                        // String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0NDI0Y2E2MjAzODJmYmM2NGE2ZjczZSIsImlhdCI6MTY4NDI0NjU4OCwiZXhwIjoxNjg1MTEwNTg4fQ.9wUhq7WkoXdORHxg7ckRZoui1wNODEGtb_SKkRulSeI";
+                       FetchMessageService().getMessagesOfVendor("64424ca620382fbc64a6f73e", value.sortedVendors![index].id, "vendor");
+                             Provider.of<FetchMessageService>(context,listen: false).getMessagesOfUser("6416b6c713f833c7ac1c938a","64424ca620382fbc64a6f73e", "user");
+
                         Navigator.push(
                             context,
                             MaterialPageRoute(

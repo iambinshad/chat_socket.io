@@ -1,19 +1,23 @@
-class MessagesModel {
-    bool? myself;
-    String? message;
+class Message {
+  final bool myself;
+  final String message;
 
-    MessagesModel({
-        this.myself,
-        this.message,
-    });
+  Message({required this.myself, required this.message});
 
-    factory MessagesModel.fromJson(Map<String, dynamic> json) => MessagesModel(
-        myself: json["myself"],
-        message: json["message"],
+  factory Message.fromJson(Map<String, dynamic> json) {
+    return Message(
+      myself: json['myself'],
+      message: json['message'],
     );
+  }
+}
+class MessageResponse {
+  final List<Message> messages;
 
-    Map<String, dynamic> toJson() => {
-        "myself": myself,
-        "message": message,
-    };
+  MessageResponse({required this.messages});
+
+  factory MessageResponse.fromJson(List<dynamic> json) {
+    List<Message> messages = json.map((item) => Message.fromJson(item)).toList();
+    return MessageResponse(messages: messages);
+  }
 }

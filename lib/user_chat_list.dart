@@ -1,3 +1,4 @@
+import 'package:chatapp_with_socket_io/chat_room.dart';
 import 'package:chatapp_with_socket_io/controller/connection_service.dart';
 import 'package:chatapp_with_socket_io/vendor_message.dart';
 import 'package:flutter/cupertino.dart';
@@ -41,7 +42,7 @@ class UserChatListScreen extends StatelessWidget {
                    return Card(
                      child: ListTile(
                        onTap: () async {
-                   Navigator.push(context, MaterialPageRoute(builder: (context) => const VendorMessageScreen(),));
+                   Navigator.push(context, MaterialPageRoute(builder: (context) =>  ChatRoom(name:value.sortedUsers![index].fullName ,receiverId:value.sortedUsers![index].id,role: "user"),));
                        },
                        leading:  value.sortedUsers![index].profilePhoto!.isEmpty
                          ? const CircleAvatar(backgroundImage: AssetImage(""))
@@ -52,13 +53,13 @@ class UserChatListScreen extends StatelessWidget {
                        
                        title:  Text(value.sortedUsers![index].fullName!),
                        
-                       trailing: CircleAvatar(
-                         radius: 9,
-                         child: Text(
-                           '${value.connectionCount![index].count}',
-                           style: const TextStyle(fontSize: 12),
-                         ),
-                       ),
+                      //  trailing:value.connectionCount?[index].count!=null? CircleAvatar(
+                      //    radius: 9,
+                      //    child: Text(
+                      //      '${value.connectionCount![index].count}',
+                      //      style: const TextStyle(fontSize: 12),
+                      //    ),
+                      //  ):null
                      ),
                    );
                  },
