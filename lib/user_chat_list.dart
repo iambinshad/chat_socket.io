@@ -53,13 +53,13 @@ class UserChatListScreen extends StatelessWidget {
                        
                        title:  Text(value.sortedUsers![index].fullName!),
                        
-                      //  trailing:value.connectionCount?[index].count!=null? CircleAvatar(
-                      //    radius: 9,
-                      //    child: Text(
-                      //      '${value.connectionCount![index].count}',
-                      //      style: const TextStyle(fontSize: 12),
-                      //    ),
-                      //  ):null
+                       trailing:value.connectionCount?[index].count!=null? CircleAvatar(
+                         radius: 9,
+                         child: Text(
+                           '${value.connectionCount![index].count}',
+                           style: const TextStyle(fontSize: 12),
+                         ),
+                       ):null
                      ),
                    );
                  },

@@ -1,12 +1,10 @@
 import 'dart:developer';
 import 'package:chatapp_with_socket_io/controller/get_message_service.dart';
 import 'package:chatapp_with_socket_io/controller/send_message_service.dart';
-import 'package:chatapp_with_socket_io/core/api_config.dart';
 import 'package:chatapp_with_socket_io/message_tile.dart';
 import 'package:chatapp_with_socket_io/provider/socket_provider.dart';
 import 'package:chatapp_with_socket_io/widget.dart';
 import 'package:provider/provider.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:flutter/material.dart';
 
 class ChatRoom extends StatefulWidget {
@@ -71,7 +69,9 @@ class _ChatRoomState extends State<ChatRoom> {
                       ? "64424ca620382fbc64a6f73e"
                       : "6416b6c713f833c7ac1c938a",
                   widget.receiverId);
-                 
+                //  Provider.of<FetchMessageService>(context,listen: false).getMessagesOfVendor(widget.role == "vendor"
+                //           ? "64424ca620382fbc64a6f73e"
+                //           : "6416b6c713f833c7ac1c938a",widget.receiverId, widget.role);
             },
             icon: const Icon(Icons.send)),
       ),
@@ -91,24 +91,24 @@ class _ChatRoomState extends State<ChatRoom> {
             ],
           )),
       body: Consumer<FetchMessageService>(
-        builder: (context, messageService, _) {
-          final messages = widget.role == "vendor"
-              ? messageService.messageResponseV!.messages
-              : messageService.messageResponseU!.messages;
-
-          return ListView.builder(
-            itemBuilder: (context, index) {
-              final message = messages[index];
-              return messageTile(
-                text: message.message,
-                context: context,
-                myself: message.myself,
-              );
-            },
-            itemCount: messages.length,
-          );
-        },
-      ),
+       builder: (context, messageService, _) {
+         final messages = widget.role == "vendor"
+             ? messageService.messageResponseV!.messages
+             : messageService.messageResponseU!.messages;
+      
+         return ListView.builder(
+           itemBuilder: (context, index) {
+             final message = messages[index];
+             return messageTile(
+               text: message.message,
+               context: context,
+               myself: message.myself,
+             );
+           },
+           itemCount: messages.length,
+         );
+       },
+        ),
     );
   }
 

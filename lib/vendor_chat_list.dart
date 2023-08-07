@@ -58,7 +58,7 @@ class VendorChatListScreen extends StatelessWidget {
                             ),
                       title: Text(value.sortedVendors![index].fullName),
                     
-                      trailing: CircleAvatar(
+                      trailing: const CircleAvatar(
                         radius: 9,
                         // child: Text(
                         //   '${value.connectionCount?[index].count}',
